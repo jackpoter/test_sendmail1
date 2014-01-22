@@ -3,7 +3,7 @@ import smtplib, email
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-def send(sub, smtp_debug, content, send_mail_user_name, send_mail_pswd, send_mail_postfix, get_mail_user, get_mail_postfix, charset):
+def send(sub, text, smtp_debug, content, send_mail_host, send_mail_port, send_mail_user_name, send_mail_pswd, send_mail_postfix, get_mail_user, get_mail_postfix, charset:
     send_mail_address = send_mail_user_name + '@' + send_mail_postfix
     to_adress = get_mail_user + '@' + get_mail_postfix
     #msg = email.mime.text.MIMEText(content,'html',charset)
@@ -11,10 +11,10 @@ def send(sub, smtp_debug, content, send_mail_user_name, send_mail_pswd, send_mai
     msg['Subject'] = email.Header.Header(sub,charset)
     msg['From'] = send_mail_address
     msg['To'] = to_adress
-    Contents = MIMEText(sub,'plain')      #
+    Contents = MIMEText(content,'plain')      #
     msg.attach(Contents)
     try:
-        smtp = smtplib.SMTP(send_mail_host, 587)
+        smtp = smtplib.SMTP(send_mail_host, send_mail_port)
         if smtp_debug == 1:
             smtp.set_debuglevel(1)
         smtp.ehlo()  
@@ -28,7 +28,9 @@ def send(sub, smtp_debug, content, send_mail_user_name, send_mail_pswd, send_mai
     except Exception,e:
         print 'sendmail Error:', e
         return False
-
+    finally:
+        smtp.quit()
+        
 if __name__ == "__main__":
     
     send_mail_host = 'smtp.gmail.com'
@@ -40,8 +42,9 @@ if __name__ == "__main__":
     smtp_debug = 1
     charset = 'utf-8'
     sub = 'Hi there'
+    content = 'say something'
 
     get_mail_user = 'goodman_save'
     get_mail_postfix = 'gmail.com'
     get_mail_host = 'pop.gmail.com'
-    send(sub, smtp_debug, content, send_mail_user_name, send_mail_pswd, send_mail_postfix, get_mail_user, get_mail_postfix, charset)
+    send(sub, text, smtp_debug, content, send_mail_host, send_mail_port, send_mail_user_name, send_mail_pswd, send_mail_postfix, get_mail_user, get_mail_postfix, charset)
